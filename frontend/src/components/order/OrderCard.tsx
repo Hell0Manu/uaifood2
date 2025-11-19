@@ -68,7 +68,7 @@ export function OrderCard({ order, onUpdate }: OrderCardProps) {
   };
 
   const calculateTotal = (items: OrderItem[]) => {
-    return items.reduce((acc, curr) => acc + parseFloat(curr.unitPrice) * curr.quantity, 0);
+    return (items || []).reduce((acc, curr) => acc + (Number(curr.unitPrice) * curr.quantity), 0);
   };
 
   return (

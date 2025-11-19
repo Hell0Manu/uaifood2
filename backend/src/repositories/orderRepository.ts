@@ -1,23 +1,35 @@
 import prisma from "../../prisma/prismaClient.js";
-
 import type { Prisma, Order, OrderStatus } from "@prisma/client";
-
 
 export class OrderRepository {
     async findAll(): Promise<Order[]> {
-        return prisma.order.findMany();
+        return prisma.order.findMany({
+            include: {
+                items: {
+                    include: {
+                        item: true, 
+                    },
+                },
+                client: true,  
+                address: true,
+            },
+            orderBy: {
+                createdAt: 'desc', 
+            },
+        });
     }
 
     async findAllByUserId(userId: bigint): Promise<Order[]> {
         return prisma.order.findMany({
             where: { clientId: userId },
             include: {
-                items: { // Inclui os 'OrderItems'
+                items: {
                     include: {
-                        item: true, // Inclui os detalhes do 'Item' (nome, preço)
+                        item: true,
                     },
                 },
-                client: true, // Inclui os dados do cliente
+                client: true,
+                address: true, 
             },
             orderBy: {
                 createdAt: 'desc',
@@ -29,14 +41,15 @@ export class OrderRepository {
         return prisma.order.findUnique({
             where: { id },
             include: {
-                    items: {
-                        include: {
-                            item: true,
+                items: {
+                    include: {
+                        item: true,
                     },
                 },
                 client: {
-                    select: { id: true, name: true, email: true }
-                }
+                    select: { id: true, name: true, email: true, phone: true }
+                },
+                address: true, 
             },
         });
     }

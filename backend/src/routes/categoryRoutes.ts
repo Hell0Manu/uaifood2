@@ -11,17 +11,16 @@ import {
 } from "../schemas/category.schema.js";
 
 const categoryRouter = Router();
-const categoryRoutes = Router();
 
-categoryRoutes.get("/", CategoryController.findAll);
+categoryRouter.get("/", CategoryController.findAll);
 
-categoryRoutes.get(
+categoryRouter.get(
   "/:id",
   validate(categoryParamsSchema),
   CategoryController.findById
 );
 
-categoryRoutes.post(
+categoryRouter.post(
   "/",
   authMiddleware,
   checkRole([UserType.ADMIN]),
@@ -29,7 +28,7 @@ categoryRoutes.post(
   CategoryController.create
 );
 
-categoryRoutes.put(
+categoryRouter.put(
   "/:id",
   authMiddleware,
   checkRole([UserType.ADMIN]),
@@ -37,7 +36,7 @@ categoryRoutes.put(
   CategoryController.update
 );
 
-categoryRoutes.delete(
+categoryRouter.delete(
   "/:id",
   authMiddleware,
   checkRole([UserType.ADMIN]),
