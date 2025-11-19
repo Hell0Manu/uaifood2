@@ -166,9 +166,3 @@ Ao rodar o comando de seed (`npx prisma db seed`), um usuário administrador é 
 - **Email**: `admin@uaifood.com`
 
 - **Senha**: `123456`
-
-## **📱 Layouts**
-
-O projeto é totalmente responsivo, adaptando-se a desktops, tablets e dispositivos móveis.
-
-Desenvolvido por **Você** com ❤️ e muito café ☕.
