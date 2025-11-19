@@ -1,0 +1,138 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+enum UserType {
+  CLIENT
+  ADMIN
+}
+
+enum PaymentMethod {
+  CASH
+  DEBIT
+  CREDIT
+  PIX
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  DELIVERED
+  CANCELED
+}
+
+model User {
+  id        BigInt   @id @default(autoincrement())
+  name      String
+  phone     String
+  email     String   @unique
+  password  String
+  userType  UserType
+  birthDate DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Lista de pedidos onde este usuário é o CLIENTE
+  ordersAsClient Order[] @relation("ClientOrders")
+
+  // Lista de pedidos que este usuário CRIOU
+  ordersCreated Order[] @relation("CreatedOrders")
+
+  addresses Address[]
+}
+
+model Address {
+  id        BigInt   @id @default(autoincrement())
+  street    String
+  number    String
+  district  String
+  city      String
+  state     String
+  zipCode   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relação 1-N com User (muitos endereços pertencem a um usuário)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId BigInt // Chave estrangeira para User
+
+  orders Order[]
+}
+
+model Order {
+  id            BigInt        @id @default(autoincrement())
+  paymentMethod PaymentMethod
+  status        OrderStatus
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relação 1-N com User (muitos pedidos pertencem a um cliente)
+  client   User   @relation("ClientOrders", fields: [clientId], references: [id])
+  clientId BigInt
+
+  // Relação para identificar quem CRIOU o pedido (ex: um admin)
+  createdBy   User   @relation("CreatedOrders", fields: [createdById], references: [id])
+  createdById BigInt
+
+  address   Address @relation(fields: [addressId], references: [id])
+  addressId BigInt
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id       BigInt @id @default(autoincrement())
+  quantity Int
+
+  unitPrice Decimal @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relação com Order
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId BigInt // Chave estrangeira para Order
+
+  // Relação com Item
+  item   Item   @relation(fields: [itemId], references: [id])
+  itemId BigInt // Chave estrangeira para Item
+
+  // Garante que cada item só apareça uma vez por pedido
+  @@unique([orderId, itemId])
+}
+
+model Item {
+  id          BigInt   @id @default(autoincrement())
+  description String   @unique
+  unitPrice   Decimal  @db.Decimal(10, 2)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relação 1-N com Category
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId BigInt // Chave estrangeira para Category
+
+  // Relação com OrderItem
+  orders OrderItem[]
+}
+
+model Category {
+  id          BigInt   @id @default(autoincrement())
+  description String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relação 1-N com Item (uma categoria tem vários itens)
+  items Item[]
+}
