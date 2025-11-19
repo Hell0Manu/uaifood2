@@ -6,10 +6,7 @@ import { useCartStore } from '@/store/cartStore';
 import { 
   Card, 
   CardContent, 
-  CardDescription, 
   CardFooter, 
-  CardHeader, 
-  CardTitle 
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,6 +44,8 @@ interface Item {
 
 const ITEMS_PER_PAGE = 6;
 
+// --- Implementação da Função ItemList (Lógica mantida) ---
+
 export function ItemList() {
   // --- Estados de Dados ---
   const [items, setItems] = useState<Item[]>([]);
@@ -83,16 +82,14 @@ export function ItemList() {
     return Array.from(uniqueCategories);
   }, [items]);
 
-  // 3. Lógica de Filtragem
+  // 3. Lógica de Filtragem, Ordenação e Paginação (mantida)
   const filteredItems = items.filter(item => {
     const matchesSearch = item.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'ALL' || item.category.description === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  // 2. Ordenação (NOVO)
   const sortedItems = useMemo(() => {
-    // Criamos uma cópia para não mutar o array original
     return [...filteredItems].sort((a, b) => {
       switch (sortOption) {
         case 'PRICE_ASC':
@@ -104,50 +101,50 @@ export function ItemList() {
         case 'NAME_DESC':
           return b.description.localeCompare(a.description);
         default:
-          return 0; // Ordem original (por ID ou criação)
+          return 0;
       }
     });
   }, [filteredItems, sortOption]);
 
-  // 4. Lógica de Paginação
   const totalPages = Math.ceil(sortedItems.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedItems = sortedItems.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  // Resetar para pagina 1 quando filtrar
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedCategory, sortOption]);
 
-  // Resetar tudo (Botão Limpar)
   const handleClearFilters = () => {
     setSearchTerm('');
     setSelectedCategory('ALL');
     setSortOption('DEFAULT');
   };
 
-  // Função auxiliar para mudar de página
   const handlePageChange = (page: number, e?: React.MouseEvent) => {
-    e?.preventDefault(); // Evita comportamento de link se houver href
+    e?.preventDefault();
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
+  };
+  
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
   };
 
   // --- Renderização ---
 
   if (loading) {
     return (
-      <div className="flex h-64 w-full flex-col items-center justify-center gap-2 text-muted-foreground">
-        <Loader2 className="h-10 w-10 animate-spin text-red-600" />
-        <p>Carregando as delícias...</p>
+      <div className="flex h-64 w-full flex-col items-center justify-center gap-2 text-[#EA7C69]">
+        <Loader2 className="h-10 w-10 animate-spin text-[#EA7C69]" />
+        <p className="text-white">Carregando as delícias...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex h-64 w-full items-center justify-center rounded-lg border border-red-200 bg-red-50 p-8 text-red-600">
+      <div className="flex h-64 w-full items-center justify-center rounded-lg border border-red-800 bg-[#252836] p-8 text-red-400">
         <p>{error}</p>
       </div>
     );
@@ -155,41 +152,71 @@ export function ItemList() {
 
   return (
     <div className="space-y-6 p-2">
-      {/* --- Barra de Ferramentas --- */}
-<div className="flex flex-col md:flex-row gap-4 p-4 bg-white rounded-xl shadow-sm border border-gray-100">
+      {/* --- Barra de Ferramentas (Busca) --- */}
+      <div className="flex flex-col md:flex-row gap-4 p-2 bg-[#2D303E] rounded-xl shadow-xl border border-[#2D303E] mb-10">
         
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#889898]" />
           <Input 
             placeholder="O que você procura hoje?" 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-gray-50 border-gray-200 focus:bg-white transition-all duration-200"
+            // Inputs em tema escuro: BG escuro, texto branco
+            className="pl-10 bg-[#2D303E] border-[#2D303E] text-white placeholder:text-[#889898] focus:bg-[#252836] transition-all duration-200"
           />
         </div>
+       
+      </div>
+
+      {/* --- LISTA DE CHIPS DE CATEGORIA --- */}
+      <div className="flex space-x-3 overflow-x-auto pb-2 -mt-2">
         
+        {/* Chip "Todas as Categorias" */}
+        <Badge
+          key="ALL"
+          onClick={() => handleCategoryChange('ALL')}
+          className={`cursor-pointer transition-colors duration-200 shrink-0 text-sm py-1.5 px-3 
+            ${selectedCategory === 'ALL' 
+              ? 'bg-[#EA7C69] hover:bg-[#d96a5b] text-[#1F1D2B] font-bold' // Cor de destaque
+              : 'bg-[#2D303E] hover:bg-[#252836] text-[#889898]'}`} // Cor de fundo secundária
+        >
+          Todas as Categorias
+        </Badge>
+
+        {/* Chips das Categorias Dinâmicas */}
+        {categories.map(cat => (
+          <Badge
+            key={cat}
+            onClick={() => handleCategoryChange(cat)}
+            className={`cursor-pointer transition-colors duration-200 shrink-0 text-sm py-1.5 px-3 
+              ${selectedCategory === cat 
+                ? 'bg-[#EA7C69] hover:bg-[#d96a5b] text-[#1F1D2B] font-bold' // Cor de destaque
+                : 'bg-[#2D303E] hover:bg-[#252836] text-[#889898]'}`} // Cor de fundo secundária
+          >
+            {cat}
+          </Badge>
+        ))}
+      </div>
+
+      {/* --- TÍTULO E ORDENAÇÃO --- */}
+      <div className="flex flex-row justify-between items-center px-2">
+        <div>
+          <h3 className="text-xl font-bold text-white mb-1">Escolha um prato</h3>
+        </div>
+         
         <div className="flex flex-row gap-3 overflow-x-auto pb-1 md:pb-0">
           
-          {/* Filtro de Categoria */}
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger className="w-[190px] bg-gray-50 border-gray-200 focus:bg-white">
-              <SelectValue placeholder="Categoria" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">Todas as Categorias</SelectItem>
-              {categories.map(cat => (
-                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
           {/* Filtro de Ordenação */}
           <Select value={sortOption} onValueChange={setSortOption}>
-            <SelectTrigger className="w-[180px] bg-gray-50 border-gray-200 focus:bg-white">
-              <ArrowUpDown className="mr-2 h-4 w-4 text-gray-500" />
+            <SelectTrigger 
+              // Estilo de elemento de controle escuro
+              className="w-[180px] bg-[#2D303E] border-none text-white focus:ring-1 focus:ring-[#EA7C69]"
+            >
+              <ArrowUpDown className="mr-2 h-4 w-4 text-[#EA7C69]" />
               <SelectValue placeholder="Ordenar" />
             </SelectTrigger>
-            <SelectContent>
+            {/* Conteúdo do Select (pop-up) precisa de estilo escuro no globals.css para ser perfeito */}
+            <SelectContent className="bg-[#252836] border-[#2D303E] text-white">
               <SelectItem value="DEFAULT">Padrão</SelectItem>
               <SelectItem value="PRICE_ASC">Menor Preço</SelectItem>
               <SelectItem value="PRICE_DESC">Maior Preço</SelectItem>
@@ -203,7 +230,8 @@ export function ItemList() {
               variant="ghost" 
               size="icon"
               onClick={handleClearFilters}
-              className="text-gray-400 hover:text-red-600 hover:bg-red-50 shrink-0"
+              // Ajustado para o esquema de cores escuras
+              className="text-[#889898] hover:text-[#EA7C69] hover:bg-[#2D303E] shrink-0"
               title="Limpar Filtros"
             >
               <FilterX className="h-5 w-5" />
@@ -212,42 +240,60 @@ export function ItemList() {
         </div>
       </div>
 
-      {/* --- Grid de Produtos --- */}
+     {/* --- Grid de Produtos --- */}
       {filteredItems.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg border border-dashed">
+        <div className="text-center p-8 bg-[#252836] rounded-xl text-[#889898] border border-dashed border-[#2D303E]">
           <p>Nenhum produto encontrado com esses filtros.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {paginatedItems.map((item) => (
-            <Card key={item.id} className="flex flex-col justify-between transition-all hover:shadow-md hover:border-red-200 group">
-              <CardHeader>
-                <div className="flex justify-between items-start gap-2">
-                  <CardTitle className="line-clamp-1" title={item.description}>
-                    {item.description}
-                  </CardTitle>
-                  <Badge variant="secondary" className="shrink-0 text-xs">
+            <Card 
+              key={item.id} 
+              // Fundo do Card (1F1D2B)
+              className="bg-[#1F1D2B] pt-0 border-none overflow-hidden flex flex-col justify-between transition-transform duration-200 hover:scale-[1.02] shadow-2xl"
+            >              
+              {/* 1. ESPAÇO DA IMAGEM E CATEGORIA */}
+              <div className="relative h-40 w-full bg-[#2D303E] flex items-center justify-center overflow-hidden">
+                
+                {/* Placeholder de Imagem */}
+                <span className="text-[#889898] text-sm">[Imagem do Produto]</span> 
+
+                {/* Badge de Categoria Flutuante */}
+                 <Badge 
+                    // Fundo escuro para a badge
+                    className="absolute bottom-3 left-3 shrink-0 text-xs bg-[#252836] text-white px-3 py-1"
+                 >
                     {item.category.description}
                   </Badge>
-                </div>
-                <CardDescription className="line-clamp-2">
-                  Delicioso item da categoria {item.category.description}
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent>
-                <p className="text-2xl font-bold text-green-600">
-                  R$ {parseFloat(item.unitPrice).toFixed(2).replace('.', ',')}
+              </div>
+
+              {/* 2. CONTEÚDO (Nome e Descrição) */}
+              <CardContent className="p-4 pt-3 flex-grow">
+                <h3 
+                    className="text-lg font-semibold line-clamp-1 mb-1 text-white" 
+                    title={item.description}
+                >
+                    {item.description}
+                </h3>
+                {/* Adicionado um texto de descrição secundário */}
+                <p className="text-sm text-[#889898] line-clamp-2">
+                  Uma descrição curta e atraente do item.
                 </p>
               </CardContent>
               
-              <CardFooter>
+              {/* 3. RODAPÉ (Preço e Botão Adicionar) */}
+              <CardFooter className="flex justify-between items-center pt-0 px-4 pb-4">
+                <p className="text-2xl font-extrabold text-[#EA7C69]">
+                  R$ {parseFloat(item.unitPrice).toFixed(2).replace('.', ',')}
+                </p>
+                
                 <Button 
-                  className="w-full bg-red-600 hover:bg-red-700 transition-all active:scale-95" 
+                  // Botão de destaque com a cor Primária (EA7C69)
+                  className="bg-[#EA7C69] hover:bg-[#d96a5b] transition-all active:scale-95 text-[#1F1D2B] shrink-0" 
                   onClick={() => addItem({ ...item, unitPrice: parseFloat(item.unitPrice) })}
                 >
-                  <ShoppingCart className="mr-2 h-4 w-4" /> 
-                  Adicionar
+                  <ShoppingCart className="h-4 w-4" /> 
                 </Button>
               </CardFooter>
             </Card>
@@ -258,12 +304,15 @@ export function ItemList() {
       {/* --- Paginação Shadcn --- */}
       {totalPages > 1 && (
         <Pagination className="mt-8">
-          <PaginationContent>
+          <PaginationContent 
+            // Paginação em destaque
+            className="bg-[#252836] p-3 rounded-xl border border-[#2D303E]"
+          >
             <PaginationItem>
               <PaginationPrevious 
                 href="#"
                 onClick={(e) => handlePageChange(currentPage - 1, e)}
-                className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                className={currentPage === 1 ? 'pointer-events-none opacity-50 text-[#889898]' : 'cursor-pointer text-white hover:bg-[#2D303E]'}
               />
             </PaginationItem>
 
@@ -274,6 +323,8 @@ export function ItemList() {
                   href="#" 
                   isActive={page === currentPage}
                   onClick={(e) => handlePageChange(page, e)}
+                  // Cor de destaque na página ativa
+                  className={page === currentPage ? 'bg-[#EA7C69] text-white hover:bg-[#d96a5b]' : 'text-white hover:bg-[#2D303E]'}
                 >
                   {page}
                 </PaginationLink>
@@ -285,7 +336,7 @@ export function ItemList() {
               <PaginationNext 
                 href="#"
                 onClick={(e) => handlePageChange(currentPage + 1, e)}
-                className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                className={currentPage === totalPages ? 'pointer-events-none opacity-50 text-[#889898]' : 'cursor-pointer text-white hover:bg-[#2D303E]'}
               />
             </PaginationItem>
           </PaginationContent>
