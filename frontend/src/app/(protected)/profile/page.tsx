@@ -2,30 +2,28 @@
 
 import { ProfileForm } from '@/components/profile/ProfileForm';
 import { DeleteAccountSection } from '@/components/profile/DeleteAccountSection';
-//import { Separator } from '@/components/ui/separator'; // Se tiver shadcn separator, senão use <hr />
 
 export default function ProfilePage() {
   return (
-    <div className="container mx-auto max-w-3xl py-8 px-4 space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-800">Meu Perfil</h1>
-        <p className="text-muted-foreground">
-          Gerencie suas informações pessoais e configurações da conta.
+    <div>
+      <div className='mb-8'>
+        <h1 className="text-4xl font-bold text-white">Meu Perfil</h1>
+        <p className="text-[#889898] mt-2">
+          Gerencie suas informações e configurações.
         </p>
       </div>
 
-      {/* Formulário de Edição */}
-      <section>
-        <ProfileForm />
-      </section>
+      <div className="space-y-8">
+        <section>
+          <ProfileForm />
+        </section>
 
-      {/* Separador Visual */}
-      <div className="my-8 border-t border-gray-200" />
+        <div className="my-8 border-t border-dashed border-[#2D303E]" />
 
-      {/* Área de Perigo */}
-      <section>
-        <DeleteAccountSection />
-      </section>
+        <section>
+          <DeleteAccountSection />
+        </section>
+      </div>
     </div>
   );
 }

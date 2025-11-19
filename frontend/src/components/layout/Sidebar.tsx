@@ -12,7 +12,8 @@ import {
   MapPin, 
   Settings,
   LogOut,
-  User, 
+  User,
+  ChefHat, 
 } from 'lucide-react';
 
 const navItems = [
@@ -41,7 +42,7 @@ export function Sidebar() {
       <div className="relative w-14 h-14 bg-[#332A3B] rounded-xl flex items-center justify-center mb-10 overflow-hidden">
         {/* Adiciona um gradiente para o efeito de "brilho" da imagem */}
         <div className="absolute inset-0 bg-gradient-to-br from-transparent via-[#8B5CF6] to-transparent opacity-20 animate-pulse-slow"></div>
-        <Store className="w-8 h-8 text-[#FF8562]" />
+        <ChefHat className="w-8 h-8 text-[#FF8562]" />
       </div>
 
       {/* Itens de Navegação */}

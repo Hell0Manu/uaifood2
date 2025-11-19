@@ -85,7 +85,14 @@ export function CartAndCheckout() {
   const selectStyles = "w-full bg-[#2D303E] border-none text-white focus:ring-1 focus:ring-[#EA7C69]";
 
   return (
-    <div className="w-full  mx-auto rounded-2xl  p-6 md:p-8">      
+    <div>     
+              <div>
+          <h1 className="text-4xl font-bold text-white">Meus pedidos e pagamentos</h1>
+          <p className="text-[#889898] mt-1">
+            Gerencie seus pedidos
+          </p>
+        </div>
+
       {items.length === 0 ? (
         <div className="text-center p-8 rounded-xl text-[#889898] border border-dashed border-[#2D303E]">
            <ShoppingCart className="mx-auto h-12 w-12 mb-4 text-[#EA7C69]" />
@@ -97,10 +104,9 @@ export function CartAndCheckout() {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6">
           {/* Coluna de Itens do Carrinho */}
-          <div className="md:col-span-2">
-            <h2 className="text-xl font-semibold text-white mb-4">Itens no Carrinho</h2>
+          <div className="md:col-span-2 ">
             <div className="bg-[#1F1D2B] rounded-xl p-4 border border-[#2D303E]">
               <Table>
                 <TableHeader>
@@ -143,7 +149,6 @@ export function CartAndCheckout() {
 
           {/* Coluna de Checkout */}
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-white mb-4">Pagamento e Entrega</h2>
             <div className="space-y-4 bg-[#1F1D2B] p-4 rounded-xl border border-[#2D303E]">
               <div className=" items-center justify-between">
                 <Label htmlFor="address" className="text-white mb-2">Endereço</Label>

@@ -55,9 +55,13 @@ export default function MyOrdersPage() {
   }
 
   return (
-    <div className=" mx-auto  py-8 px-4">
-      <h1 className="mb-8 text-4xl font-bold text-white">Meus Pedidos</h1>
-
+    <div>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-white">Meus Pedidos</h1>
+          <p className="text-[#889898] mt-1">
+            Gerencie seus pedidos.
+          </p>
+        </div>
       <div>
         <OrderFilters 
           activeTab={activeTab} 

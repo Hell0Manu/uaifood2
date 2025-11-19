@@ -5,7 +5,7 @@ import api from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
 import { Address } from '@/types';
 import { AddressCard } from '@/components/address/AddressCard';
-import { AddressFormModal } from '@/components/order/AddressFormModal'; // Ajuste o import
+import { AddressFormModal } from '@/components/order/AddressFormModal';
 import { Loader2, Map } from 'lucide-react';
 
 export default function AddressesPage() {
@@ -35,34 +35,33 @@ export default function AddressesPage() {
   if (loading) {
     return (
       <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-red-600" />
+        <Loader2 className="h-10 w-10 animate-spin text-[#EA7C69]" />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto max-w-3xl py-8 px-4">
+    <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Meus Endereços</h1>
-          <p className="text-muted-foreground mt-1">
-            Gerencie seus locais de entrega.
+          <h1 className="text-4xl font-bold text-white">Meus Endereços</h1>
+          <p className="text-[#889898] mt-1">
+            Gerencie seus locais para entrega.
           </p>
         </div>
         
-        {/* Modal para CRIAR (sem addressToEdit) */}
         <AddressFormModal onSuccess={fetchAddresses} />
       </div>
 
-      <div className="space-y-4">
+      <div className="rounded-2xl space-y-4">
         {addresses.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12 text-center bg-gray-50">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-400 mb-4">
+          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#2D303E] py-16 text-center bg-[#1F1D2B]">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1F1D2B] text-[#889898] mb-4">
               <Map className="h-8 w-8" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">Nenhum endereço cadastrado</h3>
-            <p className="text-sm text-gray-500 max-w-sm mt-2">
-              Adicione um endereço para facilitar suas compras e entregas.
+            <h3 className="text-xl font-semibold text-white">Nenhum endereço cadastrado</h3>
+            <p className="text-md text-[#889898] max-w-sm mt-2">
+              Adicione um novo endereço para receber seus pedidos.
             </p>
           </div>
         ) : (

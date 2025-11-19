@@ -51,7 +51,7 @@ export function LoginForm() {
         </div>
         <h1 className="text-3xl font-bold text-white">Bem-vindo!</h1>
         <p className="text-[#889898]">
-          Entre com seu email e senha para continuar.
+          Aqui voce encontra as melhores comidas da sua regiao.
         </p>
       </div>
       
