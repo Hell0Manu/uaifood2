@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { Loader2 } from 'lucide-react';
+import { Toaster } from "@/components/ui/sonner"; 
 
 
 export default function ProtectedLayout({
@@ -33,7 +34,10 @@ export default function ProtectedLayout({
 
 
   if (isAuthenticated) {
-    return <>{children}</>;
+    return <>{children}
+     <Toaster richColors closeButton theme="dark" />
+    </>;
+     
   }
 
   return null;

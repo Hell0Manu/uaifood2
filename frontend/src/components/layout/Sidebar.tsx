@@ -27,7 +27,7 @@ export function Sidebar() {
     { href: '/cart', icon: ShoppingCart, label: 'Carrinho' }, 
     { href: '/address', icon: MapPin, label: 'Endereços' },
     { href: '/profile', icon: User, label: 'Perfil' },
-    { href: '/settings', icon: Settings, label: 'Configurações' },
+    // { href: '/settings', icon: Settings, label: 'Configurações' },
   ];
 
   // Se for ADMIN, inserimos o Painel no começo da lista (índice 1, logo após a Loja)

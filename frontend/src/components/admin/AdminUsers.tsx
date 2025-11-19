@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, Pencil, Loader2, Plus, MapPin } from 'lucide-react';
+import { Trash2, Pencil, Loader2, Plus, MapPin, Info } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
@@ -93,6 +93,7 @@ export function AdminUsers() {
       setSelectedUserAddresses(res.data);
     } catch (error) {
       console.log("Não foi possível carregar endereços (rota pode não existir para admin).");
+      toast.warning("Não foi possível carregar os endereços deste usuário.");
     }
   };
 
@@ -148,8 +149,16 @@ export function AdminUsers() {
     <div className="space-y-6 text-white">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium text-[#FF8562]">Lista de Usuários</h3>
-        <Button onClick={() => toast.info("Para criar usuário, use a tela de Registro pública.")} variant="outline" className="border-[#332A3B] text-gray-300 hover:bg-[#332A3B] hover:text-white">
-          <Plus className="mr-2 h-4 w-4" /> Info
+        
+        {/* Botão de Info que dispara o Toast */}
+        <Button 
+          onClick={() => toast.info("Para criar um novo usuário, utilize a página de Registro pública.", {
+            description: "O painel admin serve apenas para gerenciamento."
+          })} 
+          variant="outline" 
+          className="border-[#332A3B] text-gray-300 hover:bg-[#332A3B] hover:text-white gap-2"
+        >
+          <Info className="h-4 w-4" /> Info
         </Button>
       </div>
 
@@ -187,7 +196,7 @@ export function AdminUsers() {
                       <DialogHeader><DialogTitle>Endereços de {u.name}</DialogTitle></DialogHeader>
                       <div className="space-y-4 mt-4 max-h-[60vh] overflow-y-auto">
                         {selectedUserAddresses.length === 0 ? (
-                          <p className="text-sm text-gray-500">Nenhum endereço encontrado ou função indisponível.</p>
+                          <p className="text-sm text-gray-500">Nenhum endereço encontrado.</p>
                         ) : (
                           selectedUserAddresses.map((addr) => (
                             <div key={addr.id} className="border border-[#332A3B] p-3 rounded bg-[#211E2C]">
@@ -240,16 +249,16 @@ export function AdminUsers() {
           <form onSubmit={handleUpdateUser} className="space-y-4 py-2">
             <div className="space-y-2">
               <Label>Nome</Label>
-              <Input className="bg-[#211E2C] border-[#332A3B]" value={editFormData.name} onChange={e => setEditFormData({...editFormData, name: e.target.value})} />
+              <Input className="bg-[#211E2C] border-[#332A3B] text-white" value={editFormData.name} onChange={e => setEditFormData({...editFormData, name: e.target.value})} />
             </div>
             <div className="space-y-2">
               <Label>Telefone</Label>
-              <Input className="bg-[#211E2C] border-[#332A3B]" value={editFormData.phone} onChange={e => setEditFormData({...editFormData, phone: e.target.value})} />
+              <Input className="bg-[#211E2C] border-[#332A3B] text-white" value={editFormData.phone} onChange={e => setEditFormData({...editFormData, phone: e.target.value})} />
             </div>
             <div className="space-y-2">
               <Label>Tipo de Usuário</Label>
               <Select value={editFormData.userType} onValueChange={(val: any) => setEditFormData({...editFormData, userType: val})}>
-                <SelectTrigger className="bg-[#211E2C] border-[#332A3B]"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="bg-[#211E2C] border-[#332A3B] text-white"><SelectValue /></SelectTrigger>
                 <SelectContent className="bg-[#211E2C] border-[#332A3B] text-white">
                   <SelectItem value="CLIENT">Cliente</SelectItem>
                   <SelectItem value="ADMIN">Administrador</SelectItem>
