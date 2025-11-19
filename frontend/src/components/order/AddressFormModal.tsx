@@ -7,19 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, Plus, Pencil } from 'lucide-react';
-
-// Assumindo que a interface Address foi definida globalmente ou no componente pai
-interface Address {
-  id: string;
-  street: string;
-  number: string;
-  district: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  userId: string;
-}
-
 import {
   Dialog,
   DialogContent,
@@ -31,9 +18,20 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 
+interface Address {
+  id: string;
+  street: string;
+  number: string;
+  district: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  userId: string;
+}
+
 interface AddressFormModalProps {
   onSuccess: () => void;
-  addressToEdit?: Address | null; // Se vier preenchido, é modo EDIÇÃO
+  addressToEdit?: Address | null;
 }
 
 export function AddressFormModal({ onSuccess, addressToEdit }: AddressFormModalProps) {
@@ -42,37 +40,27 @@ export function AddressFormModal({ onSuccess, addressToEdit }: AddressFormModalP
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Estados do formulário
   const [formData, setFormData] = useState({
-    street: '',
-    number: '',
-    district: '',
-    city: '',
-    state: '',
-    zipCode: '',
+    street: '', number: '', district: '', city: '', state: '', zipCode: '',
   });
 
-  // Efeito para carregar dados se for edição
   useEffect(() => {
-    if (isOpen && addressToEdit) {
-      setFormData({
-        street: addressToEdit.street,
-        number: addressToEdit.number,
-        district: addressToEdit.district,
-        city: addressToEdit.city,
-        state: addressToEdit.state,
-        zipCode: addressToEdit.zipCode,
-      });
-    } else if (isOpen && !addressToEdit) {
-      // Limpa se for criação
-      setFormData({
-        street: '',
-        number: '',
-        district: '',
-        city: '',
-        state: '',
-        zipCode: '',
-      });
+    if (isOpen) {
+      if (addressToEdit) {
+        setFormData({
+          street: addressToEdit.street,
+          number: addressToEdit.number,
+          district: addressToEdit.district,
+          city: addressToEdit.city,
+          state: addressToEdit.state,
+          zipCode: addressToEdit.zipCode,
+        });
+      } else {
+        setFormData({
+          street: '', number: '', district: '', city: '', state: '', zipCode: '',
+        });
+      }
+      setError(''); // Limpa o erro ao abrir
     }
   }, [isOpen, addressToEdit]);
 
@@ -89,126 +77,88 @@ export function AddressFormModal({ onSuccess, addressToEdit }: AddressFormModalP
 
     try {
       if (addressToEdit) {
-        // --- MODO EDIÇÃO (PUT) ---
         await api.put(`/address/${addressToEdit.id}`, formData);
       } else {
-        // --- MODO CRIAÇÃO (POST) ---
         await api.post(`/address/${user.id}/`, formData);
       }
-
       setIsOpen(false);
-      onSuccess(); // Recarrega a lista pai
+      onSuccess();
     } catch (err: any) {
       const errorMessage = err.response?.data?.error || 'Erro ao salvar endereço.';
       setError(errorMessage);
-      console.error('Erro ao salvar endereço:', err);
     } finally {
       setIsLoading(false);
     }
   };
 
   const isEditing = !!addressToEdit;
+  const inputStyles = "bg-[#2D303E] border-[#2D303E] text-white placeholder:text-[#889898] focus:bg-[#252836] focus:ring-1 focus:ring-[#EA7C69] transition-all duration-200";
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {isEditing ? (
-          <Button variant="ghost" size="icon">
-            <Pencil className="h-4 w-4 text-blue-600" />
+          <Button variant="ghost" size="icon" className="text-[#889898] hover:text-[#EA7C69] hover:bg-[#2D303E]">
+            <Pencil className="h-4 w-4" />
           </Button>
         ) : (
-          // O botão 'Adicionar Novo Endereço' na página de Checkout
-          <Button variant="outline" size="sm" className="gap-2">
-            <Plus className="h-4 w-4" /> Adicionar Novo
+          <Button variant="ghost" size="sm" className="text-sm text-[#EA7C69] hover:text-[#d96a5b] px-2">
+            <Plus className="h-4 w-4 mr-1" /> Adicionar
           </Button>
         )}
       </DialogTrigger>
       
-      {/* 6. Este é o conteúdo do Pop-up (Modal) */}
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="bg-[#1F1D2B] border-[#2D303E] text-white sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{isEditing ? 'Editar Endereço' : 'Novo Endereço'}</DialogTitle>
-          <DialogDescription>
-            {isEditing ? 'Altere os dados do seu endereço abaixo.' : 'Preencha os dados do novo endereço de entrega.'}
+          <DialogTitle className="text-2xl font-bold">{isEditing ? 'Editar Endereço' : 'Adicionar Novo Endereço'}</DialogTitle>
+          <DialogDescription className="text-[#889898]">
+            {isEditing ? 'Altere os dados e salve.' : 'Preencha os detalhes para entrega.'}
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="street" className="text-right">Rua</Label>
-              <Input
-                id="street"
-                value={formData.street}
-                onChange={handleChange}
-                className="col-span-3"
-                required
-              />
+        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="col-span-2 sm:col-span-1 space-y-2">
+              <Label htmlFor="street">Rua</Label>
+              <Input id="street" value={formData.street} onChange={handleChange} required className={inputStyles} />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="number" className="text-right">Número</Label>
-              <Input
-                id="number"
-                value={formData.number}
-                onChange={handleChange}
-                className="col-span-3"
-                required
-              />
+            <div className="col-span-2 sm:col-span-1 space-y-2">
+              <Label htmlFor="number">Número</Label>
+              <Input id="number" value={formData.number} onChange={handleChange} required className={inputStyles} />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="district" className="text-right">Bairro</Label>
-              <Input
-                id="district"
-                value={formData.district}
-                onChange={handleChange}
-                className="col-span-3"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="city" className="text-right">Cidade</Label>
-              <Input
-                id="city"
-                value={formData.city}
-                onChange={handleChange}
-                className="col-span-3"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="state" className="text-right">UF</Label>
-              <Input
-                id="state"
-                value={formData.state}
-                onChange={handleChange}
-                className="col-span-3"
-                maxLength={2}
-                required
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="zipCode" className="text-right">CEP</Label>
-              <Input
-                id="zipCode"
-                value={formData.zipCode}
-                onChange={handleChange}
-                className="col-span-3"
-                required
-              />
-            </div>
-
-            {error && <p className="text-sm text-red-500 col-span-4">{error}</p>}
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="district">Bairro</Label>
+            <Input id="district" value={formData.district} onChange={handleChange} required className={inputStyles} />
           </div>
 
-          <DialogFooter>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="col-span-3 sm:col-span-1 space-y-2">
+              <Label htmlFor="city">Cidade</Label>
+              <Input id="city" value={formData.city} onChange={handleChange} required className={inputStyles} />
+            </div>
+            <div className="col-span-3 sm:col-span-1 space-y-2">
+              <Label htmlFor="state">UF</Label>
+              <Input id="state" value={formData.state} onChange={handleChange} maxLength={2} required className={inputStyles} />
+            </div>
+            <div className="col-span-3 sm:col-span-1 space-y-2">
+              <Label htmlFor="zipCode">CEP</Label>
+              <Input id="zipCode" value={formData.zipCode} onChange={handleChange} required className={inputStyles} />
+            </div>
+          </div>
+          
+          {error && <p className="text-sm text-red-400 text-center pt-2">{error}</p>}
+
+          <DialogFooter className="pt-6">
             <DialogClose asChild>
-              <Button type="button" variant="ghost">
+              <Button type="button" variant="ghost" className="text-[#889898] hover:text-white hover:bg-[#2D303E]">
                 Cancelar
               </Button>
             </DialogClose>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading} className="bg-[#EA7C69] hover:bg-[#d96a5b] text-[#1F1D2B] font-bold">
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Salvar
+              {isEditing ? 'Salvar Alterações' : 'Adicionar Endereço'}
             </Button>
           </DialogFooter>
         </form>

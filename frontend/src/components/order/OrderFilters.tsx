@@ -25,40 +25,41 @@ const TABS = [
 ];
 
 const PERIOD_OPTIONS = [
-  { label: 'Todo tempo', value: 'ALL_TIME' },
+  { label: 'Desde sempre', value: 'ALL_TIME' },
   { label: 'Últimos 30 dias', value: '30_DAYS' },
   { label: 'Últimos 6 meses', value: '6_MONTHS' },
-  { label: 'Último 1 ano', value: '1_YEAR' },
+  { label: 'Último ano', value: '1_YEAR' },
 ];
 
 export function OrderFilters({ activeTab, setActiveTab, timeFilter, setTimeFilter }: OrderFiltersProps) {
   return (
-    <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      {/* Abas de Status */}
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div className="flex flex-wrap gap-2">
         {TABS.map((tab) => (
           <Button
             key={tab.value}
-            variant={activeTab === tab.value ? 'default' : 'outline'}
+            variant="ghost"
             size="sm"
             onClick={() => setActiveTab(tab.value)}
-            className={`rounded-full ${
-              activeTab === tab.value ? 'bg-red-600 hover:bg-red-700' : ''
-            }`}
+            className={`rounded-full transition-colors duration-200 text-sm py-1.5 px-4
+              ${activeTab === tab.value
+                ? 'bg-[#EA7C69] hover:bg-[#d96a5b] text-[#1F1D2B] font-bold'
+                : 'bg-[#2D303E] hover:bg-[#252836] text-[#889898]'
+              }`
+            }
           >
             {tab.label}
           </Button>
         ))}
       </div>
 
-      {/* Filtro de Período */}
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-gray-500">Período:</span>
+        <span className="text-sm font-medium text-[#889898]">Período:</span>
         <Select value={timeFilter} onValueChange={setTimeFilter}>
-          <SelectTrigger className="w-[180px] bg-white">
+          <SelectTrigger className="w-[190px] bg-[#2D303E] border-none text-white focus:ring-1 focus:ring-[#EA7C69]">
             <SelectValue placeholder="Período" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-[#252836] border-[#2D303E] text-white">
             {PERIOD_OPTIONS.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
