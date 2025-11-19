@@ -95,19 +95,23 @@ export function OrderCard({ order, onUpdate }: OrderCardProps) {
       </div>
 
       <div className="p-4">
-        <div className="mb-4 space-y-2">
-          {order.items.map((orderItem) => (
-            <div key={orderItem.id} className="flex justify-between text-sm">
-              <span className="text-white">
-                <span className="font-semibold text-[#EA7C69]">{orderItem.quantity}x</span> {orderItem.item.description}
-              </span>
-              <span className="text-[#889898]">
-                R$ {(parseFloat(orderItem.unitPrice) * orderItem.quantity).toFixed(2).replace('.', ',')}
-              </span>
-            </div>
-          ))}
-        </div>
+      <div className="mb-4 space-y-2">
+        {(order.items ?? []).map((orderItem) => (
+          <div key={orderItem.id} className="flex justify-between text-sm">
+            <span className="text-white">
+              <span className="font-semibold text-[#EA7C69]">{orderItem.quantity}x</span>{' '}
+              {orderItem.item.description}
+            </span>
+            <span className="text-[#889898]">
+              R$ {(parseFloat(orderItem.unitPrice) * orderItem.quantity).toFixed(2).replace('.', ',')}
+            </span>
+          </div>
+        ))}
 
+        {(!order.items || order.items.length === 0) && (
+          <p className="text-sm text-[#889898] italic">Nenhum item no pedido</p>
+        )}
+      </div>
         <div className="border-t border-[#2D303E] pt-4 flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div className="text-sm text-[#889898]">
