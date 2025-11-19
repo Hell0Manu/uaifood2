@@ -2,7 +2,7 @@ import { LoginForm } from '@/components/auth/LoginForm';
 
 export default function LoginPage() {
   return (
-    <div className="flex h-[80vh] items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center bg-[#2D303E] p-4">
       <LoginForm />
     </div>
   );

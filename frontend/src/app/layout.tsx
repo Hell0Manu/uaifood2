@@ -7,6 +7,10 @@ import { StoreInitializer } from '@/components/StoreInitializer';
 import { cn } from "@/lib/utils";
 import { LayoutContainer } from "@/components/layout/LayoutContainer"; 
 
+export const metadata: Metadata = {
+  title: "UaiFood",
+  description: "Peça sua comida favorita.",
+};
 
 export default function RootLayout({
   children,

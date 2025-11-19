@@ -1,4 +1,4 @@
-git remote add origin https://github.com/Hell0Manu/uaifood2.gitimport { z } from 'zod';
+import { z } from 'zod';
 
 // 1. O Schema de validação para 'params'
 //    Exatamente como você escreveu!

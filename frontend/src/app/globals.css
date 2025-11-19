@@ -120,3 +120,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Adiciona estilo para o ícone do date picker no Chrome/Edge */
+.date-picker-style::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(0.8) sepia(0.5) saturate(10) hue-rotate(330deg);
+  cursor: pointer;
+}
